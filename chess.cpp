@@ -1,64 +1,97 @@
 #include <iostream>
 #include <string>
 
-// Global spaces array declaration
-char spaces[144] = { 
-    ' ', ' ', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', ' ', ' ',
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-    '1', ' ', 'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', ' ', '2',
-    '2', ' ', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', ' ', '2',
-    '3', ' ', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', ' ', '3',
-    '4', ' ', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', ' ', '4',
-    '5', ' ', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', ' ', '5',
-    '6', ' ', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', ' ', '6',
-    '7', ' ', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', ' ', '7',
-    '8', ' ', 'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', ' ', '8',
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-    ' ', ' ', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', ' ', ' ' 
+char spaces[64] = { 
+    'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R',
+    'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
+    'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x',
+    'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x',
+    'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x',
+    'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x',
+    'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
+    'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'
 };
 
-void drawBoard(char *spaces) {
-    for (int i = 0; i < 144; i++) {
-        if (i % 12 == 0) {
-            std::cout << "\n";  // Start a new row every 12 elements
-        }
-        std::cout << "  " << spaces[i];  // Print the current space
+void helperDrawBoard(int index) {
+    for (int i = 0; i < 8; i++) {
+        std::cout << spaces[index + i] << " ";
     }
 }
+void drawBoard() {
+    std::cout << '\n';
+    
+    std::cout << "  ";
+    for (char col = 'a'; col <= 'h'; col++) {
+        std::cout << col << " ";  
+    }
+    std::cout << "\n";
 
-void playerMove(char *spaces, char player) {
-    int row, col, result;
+    for (int row = 0; row < 8; row++) {
+
+        std::cout << 8 - row << " ";
+
+        int startIndex = row * 8;
+
+        helperDrawBoard(startIndex);
+
+        std::cout << 8 - row << "\n";
+    }
+    
+    std::cout << "  ";
+    for (char col = 'a'; col <= 'h'; col++) {
+        std::cout << col << " "; 
+    }
+    std::cout << "\n";
+}
+
+void pieceSwap(int curr, int updated) {
+    int temp;
+    temp = spaces[updated];
+    spaces[updated] = spaces[curr];
+    spaces[curr] = temp;
+}
+
+void playerMove(char *spaces) {
+    int rowIn, rowOut, colIn, colOut, resultIn, resultOut;
     std::string pieceLoc;
 
-    std::cout << "Enter the corresponding letter and number for where you want to move your piece (e.g., a1): ";
+    std::cout << "Enter the corresponding letter and number for where the piece you want to move is (e.g., a1): ";
     std::cin >> pieceLoc;
 
-    col = pieceLoc[0] - 'a';  // Convert column letter to 0-indexed column
-    row = pieceLoc[1] - '1';  // Convert row number to 0-indexed row
+    colIn = pieceLoc[0] - 'a'; 
+    rowIn = pieceLoc[1] - '1';  
 
-    if (col >= 0 && col < 8 && row >= 0 && row < 8) {
-        result = ((row)* 12) + (col);  // Calculate the 1D array index
-        std::cout << spaces[result];
-        // Check if the space is empty
-    //     if (spaces[result] == 'x') {
-    //         spaces[result] = player;  // Place the player's piece
-    //         std::cout << "Player " << player << " moved to " << pieceLoc << "." << std::endl;
-    //     } else {
-    //         std::cout << "That space is already occupied. Try again." << std::endl;
-    //     }
-    // } else {
-    //     std::cout << "Invalid position. Try again." << std::endl;
-    // }
+    if (colIn >= 0 && colIn < 8 && rowIn >= 0 && rowIn < 8) {
+        resultIn = ((rowIn)* 8) + (colIn);  
+        // std::cout << spaces[result];
     }
+
+    std::cout << "Enter the corresponding letter and number for where you want to move the piece (e.g., a1): ";
+    std::cin >> pieceLoc;
+
+    colOut = pieceLoc[0] - 'a'; 
+    rowOut = pieceLoc[1] - '1';  
+
+    if (colIn >= 0 && colIn < 8 && rowIn >= 0 && rowIn < 8) {
+        resultIn = ((rowIn)* 8) + (colIn);  
+         std::cout << spaces[resultIn];
+    }
+
+    if (colOut >= 0 && colOut < 8 && rowOut >= 0 && rowOut < 8) {
+        resultOut = ((rowOut)* 8) + (colOut);  
+         std::cout << spaces[resultOut];
+    }
+    pieceSwap(resultIn,resultOut);
 }
 
+
+
 int main() {
-    drawBoard(spaces);  // Display the board
+    drawBoard();  
 
-    char currentPlayer = 'X';  // Let's assume player X moves first
-    playerMove(spaces, currentPlayer);  // Let player X make a move
+    playerMove(spaces);  
 
-    drawBoard(spaces);  // Display the board after the move
+    drawBoard();  
 
     return 0;
 }
