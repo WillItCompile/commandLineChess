@@ -2,9 +2,12 @@
 #include <string>
 #include <cstdlib>
 
+
+
 struct Piece {
     char type;    
-    bool color;  
+    bool color;
+    bool hasNotMoved = true;  
 };
 
 Piece spaces[64];
@@ -35,7 +38,7 @@ void drawBoard() {
         std::cout << row + 1 << " ";  
 
         for (int col = 0; col < 8; col++) {
-            int index = row * 8 + col;  // calculates correct index
+            int index = row * 8 + col;  // calculates correct index in 1d array
             char pieceType = spaces[index].type;
             bool pieceColor = spaces[index].color;
 
@@ -55,6 +58,7 @@ void drawBoard() {
     std::cout << "  a b c d e f g h\n";  
 }
 
+
 void pieceSwap(int curr, int updated) {
     Piece temp;
     temp = spaces[updated];
@@ -62,11 +66,45 @@ void pieceSwap(int curr, int updated) {
     spaces[curr] = temp;
 }
 
+bool legalMove(Piece &currPiece, int currPos, int newPos) {
+    char pieceType = currPiece.type;
+
+    switch (pieceType)
+    {
+    case 'P':
+        if (currPiece.hasNotMoved && ((newPos == (currPos+8)) || (newPos == (currPos+16)))) {
+            // std::cout << "first if case P | currPiece.hasNotMoved: " << currPiece.hasNotMoved; //debugging switch statement
+            // std::cout << " newPos: " << newPos << " currPos:" << currPos;
+            currPiece.hasNotMoved = false;
+            return true;
+        }
+
+        else if (currPos == newPos+8) 
+         {
+        //     std::cout << "else if case P | currPiece.hasNotMoved: " << currPiece.hasNotMoved; //debugging switch statement
+        //     std::cout << " newPos: " << newPos << " currPos:" << currPos;
+            return true;
+        }
+
+        else
+        {
+            // std::cout << "else case P | currPiece.hasNotMoved: " << currPiece.hasNotMoved; //debugging switch statement
+            // std::cout << " newPos: " << newPos << " currPos:" << currPos;
+            return false;
+        }
+        
+        break;
+    
+    default:
+        return false;
+    }
+}
+
 void playerMove() {
     int rowIn, rowOut, colIn, colOut, resultIn, resultOut;
     std::string pieceLoc;
 
-    std::cout << "Enter the corresponding letter and number for where the piece you want to move is (e.g., a1): ";
+    std::cout << "Enter the corresponding letter and number for the piece you want to move (e.g., a1): ";
     std::cin >> pieceLoc;
 
     colIn = pieceLoc[0] - 'a'; 
@@ -77,7 +115,7 @@ void playerMove() {
         // std::cout << spaces[result];
     }
 
-    std::cout << "Enter the corresponding letter and number for where you want to move the piece (e.g., a1): ";
+    std::cout << "Enter the corresponding letter and number for the new location of the piece (e.g., a1): ";
     std::cin >> pieceLoc;
 
     colOut = pieceLoc[0] - 'a'; 
@@ -92,20 +130,29 @@ void playerMove() {
         resultOut = ((rowOut)* 8) + (colOut);  
         //  std::cout << spaces[resultOut].type;
     }
-    pieceSwap(resultIn,resultOut);
+    //std::cout << "spaces[result]: " << spaces[resultOut];
+
+    if(legalMove(spaces[resultIn], resultIn, resultOut)) {
+        pieceSwap(resultIn,resultOut);
+    }
+
+    else
+    {
+       std::cout << "\nIllegal move, please try again.\n\n";
+    }
+    
 }
 
 
 
 int main() {
 
+    bool gameOver = false;
     initializeBoard();
-
+    while(!gameOver) {
     drawBoard();  
-
     playerMove();  
-
-    drawBoard();  
+    }
 
     return 0;
 }
